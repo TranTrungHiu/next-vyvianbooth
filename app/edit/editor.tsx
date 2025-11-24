@@ -67,13 +67,25 @@ export const Editor = () => {
 
       // Use html2canvas for Safari, dom-to-image for others
       if (isSafari()) {
-        const canvas = await html2canvas(elementRef.current, {
-          backgroundColor: background,
-          scale: 2,
-          logging: false,
-          useCORS: true,
-        });
-        dataUrl = canvas.toDataURL("image/png");
+        // Clone the element to avoid modifying the original
+        const clone = elementRef.current.cloneNode(true) as HTMLElement;
+        clone.style.position = "absolute";
+        clone.style.left = "-9999px";
+        document.body.appendChild(clone);
+
+        try {
+          const canvas = await html2canvas(clone, {
+            backgroundColor: background,
+            scale: 2,
+            logging: false,
+            useCORS: true,
+            allowTaint: true,
+            foreignObjectRendering: false,
+          });
+          dataUrl = canvas.toDataURL("image/png", 1.0);
+        } finally {
+          document.body.removeChild(clone);
+        }
       } else {
         // Add explicit timeout to detect silent failures
         const timeoutPromise = new Promise<never>((_, reject) =>
@@ -120,9 +132,20 @@ export const Editor = () => {
       const link = document.createElement("a");
       link.download = "vyvianbooth-photostrip.png";
       link.href = dataUrl;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      
+      // For Safari, use a different approach
+      if (isSafari()) {
+        // Open in new window for Safari
+        const win = window.open();
+        if (win) {
+          win.document.write(`<img src="${dataUrl}" />`);
+          win.document.title = "Right-click and Save Image As...";
+        }
+      } else {
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
 
       console.log("Image download initiated successfully");
     } catch (error) {
