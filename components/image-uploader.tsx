@@ -160,22 +160,6 @@ export default function ImageUploader() {
     }
   };
 
-  const handleBoxClick = (index: number, e?: React.MouseEvent) => {
-    // Don't trigger if clicking on the remove button
-    if (e && (e.target as HTMLElement).closest('button')) {
-      return;
-    }
-    
-    // Trigger file input click for this specific box
-    // Safari sometimes needs the input to be programmatically triggered
-    const input = fileInputRefs.current[index];
-    if (input) {
-      // Use requestAnimationFrame for Safari compatibility
-      requestAnimationFrame(() => {
-        input?.click();
-      });
-    }
-  };
 
   // Function to convert a File to a data URL
   const fileToDataUrl = (file: File): Promise<string> => {
@@ -235,45 +219,72 @@ export default function ImageUploader() {
           return (
             <Card
               key={index}
-              className={`relative flex aspect-square w-[220px] items-center justify-center border-2 bg-[#F6F0F0] ${isDragging === index ? "border-primary border-dashed" : "border-border"} ${isRequired ? "border-primary/50" : ""} hover:border-primary/70 cursor-pointer overflow-hidden rounded-lg transition-all hover:shadow-sm`}
+              className={`relative flex aspect-square w-[220px] items-center justify-center border-2 bg-[#F6F0F0] ${isDragging === index ? "border-primary border-dashed" : "border-border"} ${isRequired ? "border-primary/50" : ""} hover:border-primary/70 overflow-hidden rounded-lg transition-all hover:shadow-sm`}
               onDragOver={(e) => handleDragOver(e, index)}
               onDragLeave={(e) => handleDragLeave(e)}
               onDrop={(e) => handleDrop(e, index)}
-              onClick={(e) => handleBoxClick(index, e)}
             >
+              <label
+                className="absolute inset-0 flex cursor-pointer items-center justify-center"
+                style={{ 
+                  zIndex: 1
+                }}
+              >
+                <input
+                  id={`file-input-${index}`}
+                  type="file"
+                  ref={(el) => {
+                    fileInputRefs.current[index] = el;
+                  }}
+                  onChange={(e) => handleFileChange(e, index)}
+                  accept="image/*"
+                  style={{ 
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    top: 0,
+                    left: 0,
+                    opacity: 0,
+                    cursor: "pointer",
+                    zIndex: 2,
+                    fontSize: 0
+                  }}
+                />
+                <span className="sr-only">Upload image {index + 1}</span>
+              </label>
+              
               {image ? (
                 <>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={image.preview || "/placeholder.svg"}
                     alt={`Uploaded image ${index + 1}`}
-                    className="h-full w-full object-cover"
+                    className="absolute inset-0 h-full w-full object-cover"
+                    style={{ pointerEvents: "none", zIndex: 0 }}
                   />
                   <Button
                     variant="destructive"
                     size="icon"
-                    className="absolute top-2 right-2 h-8 w-8 rounded-full opacity-90 hover:opacity-100"
-                    onClick={(e) => removeImage(index, e)}
+                    className="absolute top-2 right-2 z-30 h-8 w-8 rounded-full opacity-90 hover:opacity-100"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      removeImage(index, e);
+                    }}
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                    }}
                   >
                     <X className="h-4 w-4" />
                     <span className="sr-only">Remove image</span>
                   </Button>
                 </>
               ) : (
-                <div className="text-muted-foreground group flex flex-col items-center justify-center p-4">
-                  <ImageIcon className="group-hover:text-primary mb-2 h-10 w-10 transition-colors" />
+                <div className="absolute inset-0 z-0 flex flex-col items-center justify-center p-4 text-muted-foreground group" style={{ pointerEvents: "none" }}>
+                  <ImageIcon className="mb-2 h-10 w-10 transition-colors group-hover:text-primary" />
                 </div>
               )}
-              <input
-                type="file"
-                ref={(el) => {
-                  fileInputRefs.current[index] = el;
-                }}
-                onChange={(e) => handleFileChange(e, index)}
-                accept="image/*"
-                className="hidden"
-                style={{ display: "none" }}
-              />
             </Card>
           );
         })}
