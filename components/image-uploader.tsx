@@ -43,22 +43,30 @@ export default function ImageUploader() {
     e: React.ChangeEvent<HTMLInputElement>,
     index: number,
   ) => {
+    console.log("handleFileChange called", index, e.target.files);
     const files = e.target.files;
-    if (!files || files.length === 0) return;
+    if (!files || files.length === 0) {
+      console.warn("No files selected");
+      return;
+    }
 
     const file = files[0];
+    console.log("File selected:", file.name, file.type, file.size);
     
     // Validate image file with Safari-compatible check
     if (!isValidImageFile(file)) {
-      console.warn("Invalid image file:", file.name);
+      console.warn("Invalid image file:", file.name, file.type);
       return;
     }
 
     try {
       // Create a new image object
+      const objectURL = URL.createObjectURL(file);
+      console.log("Created object URL:", objectURL);
+      
       const newImage = {
         file,
-        preview: URL.createObjectURL(file),
+        preview: objectURL,
       };
 
       // Update the images array
@@ -74,6 +82,7 @@ export default function ImageUploader() {
           newImages.push(newImage);
         }
 
+        console.log("Updated images:", newImages.length);
         return newImages.slice(0, 3); // Ensure max 3 images
       });
     } catch (error) {
@@ -160,37 +169,6 @@ export default function ImageUploader() {
     }
   };
 
-  const triggerFileInput = (index: number, e?: React.MouseEvent) => {
-    // Prevent any default behavior
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-    
-    const input = fileInputRefs.current[index];
-    if (!input) {
-      console.warn(`File input at index ${index} not found`);
-      return;
-    }
-    
-    // Safari requires file input to be triggered from a user gesture
-    // Try to click it directly - this should work if input is in DOM
-    try {
-      // Ensure input is accessible
-      input.style.pointerEvents = 'auto';
-      
-      // Use requestAnimationFrame to ensure it's in the next frame
-      requestAnimationFrame(() => {
-        try {
-          input.click();
-        } catch (err) {
-          console.error('Error clicking file input:', err);
-        }
-      });
-    } catch (error) {
-      console.error('Error triggering file input:', error);
-    }
-  };
 
 
   // Function to convert a File to a data URL
@@ -256,34 +234,56 @@ export default function ImageUploader() {
               onDragLeave={(e) => handleDragLeave(e)}
               onDrop={(e) => handleDrop(e, index)}
             >
-              <input
-                id={`file-input-${index}`}
-                type="file"
-                ref={(el) => {
-                  fileInputRefs.current[index] = el;
-                }}
-                onChange={(e) => handleFileChange(e, index)}
-                accept="image/*"
+              <label
+                htmlFor={`file-input-${index}`}
+                className="absolute inset-0 cursor-pointer"
                 style={{ 
-                  position: "absolute",
-                  width: image ? "1px" : "100%",
-                  height: image ? "1px" : "100%",
-                  top: 0,
-                  left: 0,
-                  opacity: 0,
-                  cursor: "pointer",
-                  zIndex: image ? 1 : 5,
-                  pointerEvents: image ? "none" : "auto",
-                  ...(image ? {
-                    padding: 0,
-                    margin: "-1px",
-                    overflow: "hidden",
-                    clip: "rect(0, 0, 0, 0)",
-                    whiteSpace: "nowrap",
-                    borderWidth: 0
-                  } : {})
+                  zIndex: image ? 1 : 10,
+                  pointerEvents: image ? "none" : "auto"
                 }}
-              />
+                onClick={(e) => {
+                  // Prevent label click if clicking on remove button
+                  if ((e.target as HTMLElement).closest('button')) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return;
+                  }
+                  console.log("Label clicked for index", index);
+                }}
+              >
+                <input
+                  id={`file-input-${index}`}
+                  type="file"
+                  ref={(el) => {
+                    fileInputRefs.current[index] = el;
+                    if (el) {
+                      console.log(`File input ${index} mounted`);
+                    }
+                  }}
+                  onChange={(e) => {
+                    console.log(`Input ${index} onChange triggered`);
+                    handleFileChange(e, index);
+                  }}
+                  accept="image/*"
+                  style={{ 
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    top: 0,
+                    left: 0,
+                    opacity: 0,
+                    cursor: "pointer",
+                    zIndex: 2,
+                    pointerEvents: image ? "none" : "auto",
+                    fontSize: 0
+                  }}
+                  onClick={(e) => {
+                    console.log(`Input ${index} clicked directly`);
+                    e.stopPropagation();
+                  }}
+                />
+                <span className="sr-only">Upload image {index + 1}</span>
+              </label>
               
               {image ? (
                 <>
@@ -292,8 +292,15 @@ export default function ImageUploader() {
                     src={image.preview || "/placeholder.svg"}
                     alt={`Uploaded image ${index + 1}`}
                     className="absolute inset-0 h-full w-full object-cover cursor-pointer"
-                    onClick={(e) => triggerFileInput(index, e)}
                     style={{ zIndex: 0 }}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      const input = fileInputRefs.current[index];
+                      if (input) {
+                        console.log(`Triggering file input ${index} from image click`);
+                        input.click();
+                      }
+                    }}
                   />
                   <Button
                     variant="destructive"
@@ -315,8 +322,7 @@ export default function ImageUploader() {
                 </>
               ) : (
                 <div 
-                  className="absolute inset-0 z-0 flex flex-col items-center justify-center p-4 text-muted-foreground group"
-                  style={{ pointerEvents: "none" }}
+                  className="absolute inset-0 z-0 flex flex-col items-center justify-center p-4 text-muted-foreground group pointer-events-none"
                 >
                   <ImageIcon className="mb-2 h-10 w-10 transition-colors group-hover:text-primary" />
                   <span className="text-xs mt-2">Nhấn để chọn ảnh</span>
