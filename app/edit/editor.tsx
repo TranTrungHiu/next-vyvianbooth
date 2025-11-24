@@ -132,7 +132,7 @@ export const Editor = () => {
       const link = document.createElement("a");
       link.download = "vyvianbooth-photostrip.png";
       link.href = dataUrl;
-      
+
       // For Safari, use a different approach
       if (isSafari()) {
         // Open in new window for Safari
