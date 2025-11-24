@@ -9,6 +9,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Filters } from "./filters";
 import domtoimage from "dom-to-image";
+import html2canvas from "html2canvas";
 import { Camera, Download } from "lucide-react";
 import { Preview } from "./preview";
 import { AxolotlStickers } from "./axolotl-stickers";
@@ -21,12 +22,18 @@ export const Editor = () => {
   const { images } = useImagesStore((store) => store);
   const elementRef = useRef<HTMLDivElement>(null);
 
+  // Detect Safari browser
+  const isSafari = () => {
+    if (typeof window === "undefined") return false;
+    return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  };
+
   const downloadImage = async () => {
     if (!elementRef.current) return;
 
     // Add loading indicator
     const loadingIndicator = document.createElement("div");
-    loadingIndicator.textContent = "Generating image...";
+    loadingIndicator.textContent = "Đang tạo ảnh...";
     loadingIndicator.style.position = "fixed";
     loadingIndicator.style.top = "50%";
     loadingIndicator.style.left = "50%";
@@ -56,36 +63,49 @@ export const Editor = () => {
         }),
       );
 
-      // Add explicit timeout to detect silent failures
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Dom-to-image timed out")), 10000),
-      );
+      let dataUrl: string;
 
-      const scale = 2; // Double the size
+      // Use html2canvas for Safari, dom-to-image for others
+      if (isSafari()) {
+        const canvas = await html2canvas(elementRef.current, {
+          backgroundColor: background,
+          scale: 2,
+          logging: false,
+          useCORS: true,
+        });
+        dataUrl = canvas.toDataURL("image/png");
+      } else {
+        // Add explicit timeout to detect silent failures
+        const timeoutPromise = new Promise<never>((_, reject) =>
+          setTimeout(() => reject(new Error("Dom-to-image timed out")), 10000),
+        );
 
-      // Create options object
-      const options = {
-        height: elementRef.current.offsetHeight * scale,
-        width: elementRef.current.offsetWidth * scale,
-        style: {
-          transform: `scale(${scale})`,
-          transformOrigin: "top left",
-          width: `${elementRef.current.offsetWidth}px`,
-          height: `${elementRef.current.offsetHeight}px`,
-        },
-      };
+        const scale = 2; // Double the size
 
-      // Race the actual operation against the timeout
-      const dataUrl = await Promise.race([
-        domtoimage.toPng(elementRef.current, {
-          bgcolor: background,
-          cacheBust: true,
-          imagePlaceholder:
-            "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
-          ...options,
-        }),
-        timeoutPromise,
-      ]);
+        // Create options object
+        const options = {
+          height: elementRef.current.offsetHeight * scale,
+          width: elementRef.current.offsetWidth * scale,
+          style: {
+            transform: `scale(${scale})`,
+            transformOrigin: "top left",
+            width: `${elementRef.current.offsetWidth}px`,
+            height: `${elementRef.current.offsetHeight}px`,
+          },
+        };
+
+        // Race the actual operation against the timeout
+        dataUrl = await Promise.race([
+          domtoimage.toPng(elementRef.current, {
+            bgcolor: background,
+            cacheBust: true,
+            imagePlaceholder:
+              "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+            ...options,
+          }),
+          timeoutPromise,
+        ]);
+      }
 
       // Check if we got a valid data URL
       if (
@@ -98,7 +118,7 @@ export const Editor = () => {
 
       // Create download link
       const link = document.createElement("a");
-      link.download = "bubblybooth-photostrip.png";
+      link.download = "vyvianbooth-photostrip.png";
       link.href = dataUrl;
       document.body.appendChild(link);
       link.click();
