@@ -1,15 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { cn } from "@/lib/utils";
 import { useFiltersStore } from "@/providers/filters-store-provider";
 import { useImagesStore } from "@/providers/images-store-provider";
@@ -29,8 +21,6 @@ export const Editor = () => {
     useFiltersStore((store) => store);
   const { images } = useImagesStore((store) => store);
   const elementRef = useRef<HTMLDivElement>(null);
-  const [showDownloadModal, setShowDownloadModal] = useState(false);
-  const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
 
   // Detect Safari browser
   const isSafari = () => {
@@ -140,9 +130,8 @@ export const Editor = () => {
 
       // Safari (especially mobile Safari) needs special handling
       if (isSafari()) {
-        // Show modal for Safari users
-        setImageDataUrl(dataUrl);
-        setShowDownloadModal(true);
+        // Open image in new tab for Safari users - they can save it manually
+        window.open(dataUrl, "_blank");
       } else {
         // Auto-download for other browsers
         const link = document.createElement("a");
@@ -251,57 +240,6 @@ export const Editor = () => {
         </Button>
       </div>
 
-      {/* Download Modal for Safari */}
-      <Dialog open={showDownloadModal} onOpenChange={setShowDownloadModal}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-center text-2xl">Tải ảnh xuống</DialogTitle>
-            <DialogDescription className="text-center text-base">
-              Chọn một trong các cách sau để lưu ảnh:
-            </DialogDescription>
-          </DialogHeader>
-          <div className="my-4 flex flex-col gap-3">
-            <Button
-              onClick={() => {
-                if (imageDataUrl) {
-                  const link = document.createElement("a");
-                  link.download = "vyvianbooth-photostrip.png";
-                  link.href = imageDataUrl;
-                  link.target = "_blank";
-                  document.body.appendChild(link);
-                  link.click();
-                  document.body.removeChild(link);
-                }
-                setShowDownloadModal(false);
-              }}
-              className="w-full py-6 text-lg"
-            >
-              Mở trong tab mới
-            </Button>
-            <Button
-              onClick={() => {
-                if (imageDataUrl) {
-                  window.open(imageDataUrl, "_blank");
-                }
-                setShowDownloadModal(false);
-              }}
-              variant="outline"
-              className="w-full py-6 text-lg"
-            >
-              Xem ảnh (nhấn giữ để lưu)
-            </Button>
-          </div>
-          <DialogFooter>
-            <Button
-              onClick={() => setShowDownloadModal(false)}
-              variant="ghost"
-              className="w-full"
-            >
-              Đóng
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
