@@ -26,70 +26,35 @@ export default function ImageUploader() {
     };
   }, [images]);
 
+  const isValidImageFile = (file: File): boolean => {
+    // Safari sometimes returns empty string for file.type
+    // Check by file extension as fallback
+    if (file.type && file.type.startsWith("image/")) {
+      return true;
+    }
+    
+    // Fallback: check file extension
+    const validExtensions = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".svg"];
+    const fileName = file.name.toLowerCase();
+    return validExtensions.some((ext) => fileName.endsWith(ext));
+  };
+
   const handleFileChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number,
   ) => {
-    if (!e.target.files?.length) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
-    const file = e.target.files[0];
-    if (!file.type.startsWith("image/")) return;
-
-    // Create a new image object
-    const newImage = {
-      file,
-      preview: URL.createObjectURL(file),
-    };
-
-    // Update the images array
-    setImages((prev) => {
-      const newImages = [...prev];
-
-      // If we're replacing an existing image, revoke its URL
-      if (index < newImages.length) {
-        URL.revokeObjectURL(newImages[index].preview);
-        newImages[index] = newImage;
-      } else {
-        // Otherwise add to the end
-        newImages.push(newImage);
-      }
-
-      return newImages.slice(0, 3); // Ensure max 3 images
-    });
-
-    // Reset the file input
-    if (fileInputRefs.current[index]) {
-      fileInputRefs.current[index]!.value = "";
+    const file = files[0];
+    
+    // Validate image file with Safari-compatible check
+    if (!isValidImageFile(file)) {
+      console.warn("Invalid image file:", file.name);
+      return;
     }
-  };
 
-  const removeImage = (index: number, e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent triggering the box click
-
-    setImages((prev) => {
-      // Revoke the object URL to prevent memory leaks
-      URL.revokeObjectURL(prev[index].preview);
-      return prev.filter((_, i) => i !== index);
-    });
-  };
-
-  const handleDragOver = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    setIsDragging(index);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(null);
-  };
-
-  const handleDrop = (e: React.DragEvent, index: number) => {
-    e.preventDefault();
-    setIsDragging(null);
-
-    if (e.dataTransfer.files?.length) {
-      const file = e.dataTransfer.files[0];
-      if (!file.type.startsWith("image/")) return;
-
+    try {
       // Create a new image object
       const newImage = {
         file,
@@ -111,13 +76,104 @@ export default function ImageUploader() {
 
         return newImages.slice(0, 3); // Ensure max 3 images
       });
+    } catch (error) {
+      console.error("Error handling file:", error);
+    }
+
+    // Reset the file input - Safari needs this to allow re-selecting the same file
+    // Use setTimeout to ensure it happens after the event is processed
+    setTimeout(() => {
+      if (fileInputRefs.current[index]) {
+        fileInputRefs.current[index]!.value = "";
+      }
+    }, 0);
+  };
+
+  const removeImage = (index: number, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the box click
+
+    setImages((prev) => {
+      // Revoke the object URL to prevent memory leaks
+      URL.revokeObjectURL(prev[index].preview);
+      return prev.filter((_, i) => i !== index);
+    });
+  };
+
+  const handleDragOver = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(index);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only clear dragging state if we're actually leaving the drop zone
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX;
+    const y = e.clientY;
+    if (x < rect.left || x > rect.right || y < rect.top || y > rect.bottom) {
+      setIsDragging(null);
     }
   };
 
-  const handleBoxClick = (index: number) => {
+  const handleDrop = (e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(null);
+
+    const files = e.dataTransfer?.files;
+    if (!files || files.length === 0) return;
+
+    const file = files[0];
+    
+    // Validate image file with Safari-compatible check
+    if (!isValidImageFile(file)) {
+      console.warn("Invalid image file:", file.name);
+      return;
+    }
+
+    try {
+      // Create a new image object
+      const newImage = {
+        file,
+        preview: URL.createObjectURL(file),
+      };
+
+      // Update the images array
+      setImages((prev) => {
+        const newImages = [...prev];
+
+        // If we're replacing an existing image, revoke its URL
+        if (index < newImages.length) {
+          URL.revokeObjectURL(newImages[index].preview);
+          newImages[index] = newImage;
+        } else {
+          // Otherwise add to the end
+          newImages.push(newImage);
+        }
+
+        return newImages.slice(0, 3); // Ensure max 3 images
+      });
+    } catch (error) {
+      console.error("Error handling dropped file:", error);
+    }
+  };
+
+  const handleBoxClick = (index: number, e?: React.MouseEvent) => {
+    // Don't trigger if clicking on the remove button
+    if (e && (e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    
     // Trigger file input click for this specific box
-    if (fileInputRefs.current[index]) {
-      fileInputRefs.current[index]?.click();
+    // Safari sometimes needs the input to be programmatically triggered
+    const input = fileInputRefs.current[index];
+    if (input) {
+      // Use requestAnimationFrame for Safari compatibility
+      requestAnimationFrame(() => {
+        input?.click();
+      });
     }
   };
 
@@ -181,9 +237,9 @@ export default function ImageUploader() {
               key={index}
               className={`relative flex aspect-square w-[220px] items-center justify-center border-2 bg-[#F6F0F0] ${isDragging === index ? "border-primary border-dashed" : "border-border"} ${isRequired ? "border-primary/50" : ""} hover:border-primary/70 cursor-pointer overflow-hidden rounded-lg transition-all hover:shadow-sm`}
               onDragOver={(e) => handleDragOver(e, index)}
-              onDragLeave={handleDragLeave}
+              onDragLeave={(e) => handleDragLeave(e)}
               onDrop={(e) => handleDrop(e, index)}
-              onClick={() => handleBoxClick(index)}
+              onClick={(e) => handleBoxClick(index, e)}
             >
               {image ? (
                 <>
@@ -216,6 +272,7 @@ export default function ImageUploader() {
                 onChange={(e) => handleFileChange(e, index)}
                 accept="image/*"
                 className="hidden"
+                style={{ display: "none" }}
               />
             </Card>
           );
