@@ -160,6 +160,38 @@ export default function ImageUploader() {
     }
   };
 
+  const triggerFileInput = (index: number, e?: React.MouseEvent) => {
+    // Prevent any default behavior
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
+    const input = fileInputRefs.current[index];
+    if (!input) {
+      console.warn(`File input at index ${index} not found`);
+      return;
+    }
+    
+    // Safari requires file input to be triggered from a user gesture
+    // Try to click it directly - this should work if input is in DOM
+    try {
+      // Ensure input is accessible
+      input.style.pointerEvents = 'auto';
+      
+      // Use requestAnimationFrame to ensure it's in the next frame
+      requestAnimationFrame(() => {
+        try {
+          input.click();
+        } catch (err) {
+          console.error('Error clicking file input:', err);
+        }
+      });
+    } catch (error) {
+      console.error('Error triggering file input:', error);
+    }
+  };
+
 
   // Function to convert a File to a data URL
   const fileToDataUrl = (file: File): Promise<string> => {
@@ -224,34 +256,34 @@ export default function ImageUploader() {
               onDragLeave={(e) => handleDragLeave(e)}
               onDrop={(e) => handleDrop(e, index)}
             >
-              <label
-                className="absolute inset-0 flex cursor-pointer items-center justify-center"
-                style={{ 
-                  zIndex: 1
+              <input
+                id={`file-input-${index}`}
+                type="file"
+                ref={(el) => {
+                  fileInputRefs.current[index] = el;
                 }}
-              >
-                <input
-                  id={`file-input-${index}`}
-                  type="file"
-                  ref={(el) => {
-                    fileInputRefs.current[index] = el;
-                  }}
-                  onChange={(e) => handleFileChange(e, index)}
-                  accept="image/*"
-                  style={{ 
-                    position: "absolute",
-                    width: "100%",
-                    height: "100%",
-                    top: 0,
-                    left: 0,
-                    opacity: 0,
-                    cursor: "pointer",
-                    zIndex: 2,
-                    fontSize: 0
-                  }}
-                />
-                <span className="sr-only">Upload image {index + 1}</span>
-              </label>
+                onChange={(e) => handleFileChange(e, index)}
+                accept="image/*"
+                style={{ 
+                  position: "absolute",
+                  width: image ? "1px" : "100%",
+                  height: image ? "1px" : "100%",
+                  top: 0,
+                  left: 0,
+                  opacity: 0,
+                  cursor: "pointer",
+                  zIndex: image ? 1 : 5,
+                  pointerEvents: image ? "none" : "auto",
+                  ...(image ? {
+                    padding: 0,
+                    margin: "-1px",
+                    overflow: "hidden",
+                    clip: "rect(0, 0, 0, 0)",
+                    whiteSpace: "nowrap",
+                    borderWidth: 0
+                  } : {})
+                }}
+              />
               
               {image ? (
                 <>
@@ -259,8 +291,9 @@ export default function ImageUploader() {
                   <img
                     src={image.preview || "/placeholder.svg"}
                     alt={`Uploaded image ${index + 1}`}
-                    className="absolute inset-0 h-full w-full object-cover"
-                    style={{ pointerEvents: "none", zIndex: 0 }}
+                    className="absolute inset-0 h-full w-full object-cover cursor-pointer"
+                    onClick={(e) => triggerFileInput(index, e)}
+                    style={{ zIndex: 0 }}
                   />
                   <Button
                     variant="destructive"
@@ -281,8 +314,12 @@ export default function ImageUploader() {
                   </Button>
                 </>
               ) : (
-                <div className="absolute inset-0 z-0 flex flex-col items-center justify-center p-4 text-muted-foreground group" style={{ pointerEvents: "none" }}>
+                <div 
+                  className="absolute inset-0 z-0 flex flex-col items-center justify-center p-4 text-muted-foreground group"
+                  style={{ pointerEvents: "none" }}
+                >
                   <ImageIcon className="mb-2 h-10 w-10 transition-colors group-hover:text-primary" />
+                  <span className="text-xs mt-2">Nhấn để chọn ảnh</span>
                 </div>
               )}
             </Card>
