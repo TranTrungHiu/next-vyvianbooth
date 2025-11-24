@@ -12,19 +12,19 @@ import Webcam from "react-webcam";
 const TIMER = 4000;
 
 const RANDOM_MSGS = [
-  "You look great!",
-  "You're doing amazing!",
-  "You're a star!",
-  "You're a natural!",
-  "You're a pro!",
-  "You're a model!",
-  "You're a legend!",
-  "You're awesome!",
-  "You're fantastic!",
-  "You're a superstar!",
-  "You're a hero!",
-  "You're incredible!",
-  "You're amazing!",
+  "Bạn trông thật tuyệt!",
+  "Bạn làm rất tốt!",
+  "Bạn là ngôi sao!",
+  "Bạn thật tự nhiên!",
+  "Bạn là chuyên gia!",
+  "Bạn là người mẫu!",
+  "Bạn là huyền thoại!",
+  "Bạn thật tuyệt vời!",
+  "Bạn thật tuyệt diệu!",
+  "Bạn là siêu sao!",
+  "Bạn là anh hùng!",
+  "Bạn thật đáng kinh ngạc!",
+  "Bạn thật tuyệt!",
 ];
 
 export const WebcamCapture = () => {
@@ -64,70 +64,70 @@ export const WebcamCapture = () => {
   }, [images.length, restart, started]);
 
   return (
-    <div className="space-y-5">
-      <div className="h-[51px]">
+    <div className="space-y-3">
+      <div className="h-[45px]">
         {!started && images.length < 3 && (
           <Button
-            className="bg-vintage-gold w-full px-8 py-6 text-xl font-bold uppercase"
+            className="bg-vintage-gold w-full px-6 py-4 text-lg font-bold uppercase"
             onClick={handleStart}
           >
-            <Camera /> Take a Photo
+            <Camera /> Chụp ảnh
           </Button>
         )}
         {images.length >= 3 && (
           <div className="grid grid-cols-2 gap-2">
             <Button
               asChild
-              className="bg-vintage-gold px-8 py-6 text-xl font-bold uppercase"
+              className="bg-vintage-gold px-6 py-4 text-lg font-bold uppercase"
             >
               <Link href="/edit">
-                <Edit /> Edit Photos
+                <Edit /> Chỉnh sửa
               </Link>
             </Button>
             <Button
               onClick={handleRetake}
               variant="destructive"
-              className="px-8 py-6 text-xl font-bold uppercase"
+              className="px-6 py-4 text-lg font-bold uppercase"
             >
-              <Camera /> Retake
+              <Camera /> Chụp lại
             </Button>
           </div>
         )}
       </div>
-      <div className="relative overflow-hidden rounded-xl md:h-[375px]">
+      <div className="relative overflow-hidden rounded-xl md:h-[300px]">
         <Webcam
           ref={webcamRef}
           mirrored={true}
           audio={false}
           screenshotFormat="image/jpeg"
           className="relative"
-          width={500}
+          width={400}
         />
         {isRunning && (
-          <div className="absolute inset-0 z-50 grid place-content-center bg-black/35 text-center text-3xl text-white">
+          <div className="absolute inset-0 z-50 grid place-content-center bg-black/35 text-center text-2xl text-white">
             {totalSeconds === 4 && images.length === 0
-              ? "Ready!?"
+              ? "Sẵn sàng chưa!?"
               : images.length === 0 && totalSeconds}
             {totalSeconds === 4 && images.length === 1
-              ? "Here's another one!"
+              ? "Đây là bức thứ hai!"
               : images.length === 1 && totalSeconds}
             {totalSeconds === 4 && images.length === 2
-              ? "Get ready for the last photo!"
+              ? "Chuẩn bị cho bức ảnh cuối cùng!"
               : images.length === 2 && totalSeconds}
           </div>
         )}
         {!isRunning && images.length >= 3 && (
-          <div className="absolute inset-0 z-50 grid place-content-center bg-black text-center text-3xl text-white">
+          <div className="absolute inset-0 z-50 grid place-content-center bg-black text-center text-2xl text-white">
             {RANDOM_MSGS[Math.floor(Math.random() * RANDOM_MSGS.length)]}
           </div>
         )}
       </div>
 
-      <div className="flex justify-center gap-5">
+      <div className="flex justify-center gap-3">
         {images.slice(0, 3).map((image, index) => (
           <div
             key={index}
-            className="relative h-20 w-20 overflow-hidden rounded-xl border border-black shadow-[3px_3px_0px_0px_#1a202c]"
+            className="relative h-16 w-16 overflow-hidden rounded-xl border border-black shadow-[2px_2px_0px_0px_#1a202c]"
           >
             <Image src={image} layout="fill" objectFit="cover" alt="" />
           </div>
@@ -135,7 +135,7 @@ export const WebcamCapture = () => {
         {Array.from({ length: 3 - images.length }).map((_, index) => (
           <div
             key={index + images.length}
-            className="relative h-20 w-20 rounded-xl border border-black bg-gray-200 shadow-[3px_3px_0px_0px_#1a202c]"
+            className="relative h-16 w-16 rounded-xl border border-black bg-gray-200 shadow-[2px_2px_0px_0px_#1a202c]"
           />
         ))}
       </div>

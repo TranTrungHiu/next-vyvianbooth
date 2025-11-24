@@ -37,11 +37,11 @@ export const Filters = () => {
   return (
     <div className="order-1 w-full max-w-[350px] divide-y-2 self-center">
       <div className="pb-5">
-        <p>Stickers</p>
+        <p>Nhãn dán</p>
         <PhotostripStickers />
       </div>
       <div className="pb-5">
-        <p>Photostrip</p>
+        <p>Dải ảnh</p>
         <div className="flex flex-wrap gap-3">
           {colors.map((color) => (
             <button
@@ -60,7 +60,7 @@ export const Filters = () => {
         </div>
       </div>
       <div className="py-5">
-        <p>Background</p>
+        <p>Nền</p>
         <div className="flex flex-wrap gap-3">
           {colors.map((color) => (
             <button
@@ -79,7 +79,7 @@ export const Filters = () => {
         </div>
       </div>
       <div className="py-5">
-        <p>Filters</p>
+        <p>Bộ lọc</p>
         <div className="flex flex-wrap gap-3">
           {filters.map((filt) => (
             <button
@@ -107,7 +107,7 @@ export const Filters = () => {
             htmlFor="display-toggle"
             className="cursor-pointer font-serif text-[#B89B6D]"
           >
-            Enable Date
+            Hiển thị ngày
           </label>
         </div>
       </div>

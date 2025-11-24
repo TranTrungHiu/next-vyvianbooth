@@ -36,30 +36,30 @@ export const Preview = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-vintage-gold px-8 py-6 text-xl font-bold">
-          <Eye /> Preview
+        <Button className="bg-vintage-gold w-full px-8 py-6 text-xl font-bold">
+          <Eye /> Xem trước
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] overflow-auto border-none bg-transparent shadow-none">
         <DialogHeader className="sr-only">
-          <DialogTitle>Preview</DialogTitle>
+          <DialogTitle>Xem trước</DialogTitle>
           <DialogDescription>
-            Click on the photostrip to close the preview.
+            Nhấn vào dải ảnh để đóng xem trước.
           </DialogDescription>
         </DialogHeader>
         <div
-          className="relative mx-auto w-fit p-6"
+          className="relative mx-auto w-fit p-3"
           style={{ backgroundColor: background }}
         >
           <div
-            className="grid gap-4 rounded p-4"
+            className="grid gap-2 rounded p-2"
             style={{
               backgroundColor: photostrip,
               boxShadow: getInsetShadow(background),
             }}
           >
             {images.slice(0, 3).map((image, index) => (
-              <div key={index} className="relative h-[180px] w-[240px]">
+              <div key={index} className="relative h-[110px] w-[150px]">
                 <Image
                   src={image}
                   fill
@@ -72,10 +72,10 @@ export const Preview = ({
               </div>
             ))}
             {dateEnabled && (
-              <p className="font-believe-heart bg-white text-center">
-                {new Date().toLocaleDateString("en-US", {
-                  month: "long",
+              <p className="font-believe-heart bg-white text-center text-sm">
+                {new Date().toLocaleDateString("vi-VN", {
                   day: "numeric",
+                  month: "long",
                   year: "numeric",
                 })}
               </p>

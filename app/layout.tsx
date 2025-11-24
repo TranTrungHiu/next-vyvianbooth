@@ -8,22 +8,18 @@ import { ImagesStoreProvider } from "@/providers/images-store-provider";
 import { FiltersStoreProvider } from "@/providers/filters-store-provider";
 import iconImage from "./assets/icon.png";
 
-const misoRegular = localFont({
-  src: "./fonts/miso-regular.woff",
-  variable: "--font-miso",
+const cupidDarling = localFont({
+  src: "./fonts/DFVN Bagel Fat One.ttf",
+  variable: "--font-cupid",
   display: "swap",
+  weight: "400",
 });
 
-const sail = localFont({
-  src: "./fonts/sail-regular.otf",
-  variable: "--font-sail",
+const svnClaytonia = localFont({
+  src: "./fonts/SVN-Claytonia.ttf",
+  variable: "--font-claytonia",
   display: "swap",
-});
-
-const believeHeart = localFont({
-  src: "./fonts/Believe-Heart.otf",
-  variable: "--font-believe-heart",
-  display: "swap",
+  weight: "400",
 });
 
 const websiteUrl = "https://bubblybooth.vercel.app";
@@ -32,7 +28,7 @@ const imageUrl = "./public/vyvianbooth.png";
 export const metadata: Metadata = {
   title: "VyvianBooth",
   description:
-    "Step into a world of vintage charm and playful memories! ✨ Vyvian Booth is your go-to photobooth experience, where every snapshot is filled with joy, laughter, and a touch of retro magic. Whether you're celebrating a special occasion or just capturing fun moments with friends, our customizable and aesthetic filters bring your photos to life with a nostalgic yet modern twist. 📷 Snap. Smile. Sparkle. Let's make memories that last forever—one click at a time!",
+    "Bước vào thế giới quyến rũ cổ điển và những kỷ niệm vui vẻ! ✨ Vyvian Booth là trải nghiệm photobooth tuyệt vời của bạn, nơi mỗi khoảnh khắc tràn ngập niềm vui, tiếng cười và một chút ma thuật hoài cổ. Dù bạn đang ăn mừng một dịp đặc biệt hay chỉ đang ghi lại những khoảnh khắc vui vẻ với bạn bè, các bộ lọc thẩm mỹ có thể tùy chỉnh của chúng tôi mang đến sức sống cho ảnh của bạn với phong cách hoài niệm hiện đại. 📷 Chụp. Cười. Tỏa sáng. Hãy cùng tạo nên những kỷ niệm mãi mãi—từng khoảnh khắc!",
   metadataBase: new URL(websiteUrl),
   icons: {
     icon: iconImage.src,
@@ -41,58 +37,54 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: websiteUrl,
-    title: "VyvianBooth - Vintage Photobooth Experience",
+    title: "VyvianBooth - Photobooth Hoài Niệm",
     siteName: "VyvianBooth",
     description:
-      "Step into a world of vintage charm and playful memories! ✨ Vyvian Booth is your go-to photobooth experience, where every snapshot is filled with joy, laughter, and a touch of retro magic. Whether you're celebrating a special occasion or just capturing fun moments with friends, our customizable and aesthetic filters bring your photos to life with a nostalgic yet modern twist. 📷 Snap. Smile. Sparkle. Let's make memories that last forever—one click at a time!",
+      "Bước vào thế giới quyến rũ cổ điển và những kỷ niệm vui vẻ! ✨ Vyvian Booth là trải nghiệm photobooth tuyệt vời của bạn, nơi mỗi khoảnh khắc tràn ngập niềm vui, tiếng cười và một chút ma thuật hoài cổ. Dù bạn đang ăn mừng một dịp đặc biệt hay chỉ đang ghi lại những khoảnh khắc vui vẻ với bạn bè, các bộ lọc thẩm mỹ có thể tùy chỉnh của chúng tôi mang đến sức sống cho ảnh của bạn với phong cách hoài niệm hiện đại. 📷 Chụp. Cười. Tỏa sáng. Hãy cùng tạo nên những kỷ niệm mãi mãi—từng khoảnh khắc!",
     images: [
       {
         url: imageUrl,
         width: 1200,
         height: 630,
-        alt: "VyvianBooth - Vintage Photobooth Experience",
+        alt: "VyvianBooth - Photobooth Hoài Niệm",
       },
     ],
-    locale: "en_US",
+    locale: "vi_VN",
   },
   twitter: {
     card: "summary_large_image",
-    title: "VyvianBooth - Vintage Photobooth Experience",
+    title: "VyvianBooth - Photobooth Hoài Niệm",
     description:
-      "Step into a world of vintage charm and playful memories! ✨ Vyvian Booth is your go-to photobooth experience, where every snapshot is filled with joy, laughter, and a touch of retro magic. Whether you're celebrating a special occasion or just capturing fun moments with friends, our customizable and aesthetic filters bring your photos to life with a nostalgic yet modern twist. 📷 Snap. Smile. Sparkle. Let's make memories that last forever—one click at a time!",
+      "Bước vào thế giới quyến rũ cổ điển và những kỷ niệm vui vẻ! ✨ Vyvian Booth là trải nghiệm photobooth tuyệt vời của bạn, nơi mỗi khoảnh khắc tràn ngập niềm vui, tiếng cười và một chút ma thuật hoài cổ. 📷 Chụp. Cười. Tỏa sáng. Hãy cùng tạo nên những kỷ niệm mãi mãi—từng khoảnh khắc!",
     images: [imageUrl],
   },
   keywords: [
     "photobooth",
+    "chụp ảnh",
+    "hoài niệm",
     "vintage",
     "retro",
-    "filters",
-    "memories",
-    "nostalgia",
-    "fun",
-    "photography",
-    "camera",
-    "photos",
-    "pictures",
-    "snapshots",
-    "celebration",
-    "special occasion",
-    "friends",
-    "family",
-    "joy",
-    "laughter",
-    "magic",
-    "customizable",
-    "aesthetic",
-    "modern",
-    "twist",
-    "snap",
-    "smile",
-    "sparkle",
-    "memories",
-    "forever",
-    "click",
-    "time",
+    "bộ lọc",
+    "kỷ niệm",
+    "nhiếp ảnh",
+    "máy ảnh",
+    "ảnh đẹp",
+    "khoảnh khắc",
+    "lễ kỷ niệm",
+    "bạn bè",
+    "gia đình",
+    "niềm vui",
+    "tiếng cười",
+    "thẩm mỹ",
+    "hiện đại",
+    "Vyvian Booth",
+    "chụp hình",
+  ],
+  authors: [
+    {
+      name: "Briuwu",
+      url: "https://brianmillonte.vercel.app/",
+    },
   ],
 };
 
@@ -102,9 +94,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="vi">
       <body
-        className={`${sail.variable} ${misoRegular.variable} ${believeHeart.variable} font-miso grid min-h-dvh grid-rows-[auto_1fr_auto] antialiased`}
+        className={`${cupidDarling.variable} ${svnClaytonia.variable} font-claytonia grid min-h-dvh grid-rows-[auto_1fr_auto] antialiased`}
       >
         <Header />
         <FiltersStoreProvider>

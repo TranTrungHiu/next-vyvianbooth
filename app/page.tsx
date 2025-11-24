@@ -50,19 +50,19 @@ export default function Home() {
         <div className="flex flex-col gap-5">
           <Button
             asChild
-            className="btn-glow from-neon-pink to-coral bg-gradient-to-r px-8 py-7 text-xl font-bold uppercase shadow-lg transition-all hover:shadow-2xl"
+            className="btn-glow from-neon-pink to-coral bg-gradient-to-r px-8 py-7 text-xl font-bold uppercase shadow-lg transition-all hover:shadow-2xl w-full"
           >
-            <Link href="/camera">
+            <Link href="/camera" className="w-full">
               <Camera className="animate-bounce" />
-              Use Camera
+              Dùng Camera
             </Link>
           </Button>
           <Button
             asChild
-            className="btn-glow from-mint to-sky bg-gradient-to-r px-8 py-7 text-xl font-bold uppercase shadow-lg transition-all hover:shadow-2xl"
+            className="btn-glow from-mint to-sky bg-gradient-to-r px-8 py-7 text-xl font-bold uppercase shadow-lg transition-all hover:shadow-2xl w-full"
           >
-            <Link href="/upload">
-              <Upload className="animate-bounce" /> Upload Photos
+            <Link href="/upload" className="w-full">
+              <Upload className="animate-bounce" /> Tải Ảnh Lên
             </Link>
           </Button>
         </div>
@@ -73,8 +73,8 @@ export default function Home() {
         <Image
           src={gif5}
           alt=""
-          width={100}
-          height={100}
+          width={80}
+          height={60}
           className="opacity-60"
           unoptimized
         />

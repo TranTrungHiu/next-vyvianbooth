@@ -14,13 +14,13 @@ export const PhotostripStickers = () => {
   const { stickers, setStickers } = useFiltersStore((store) => store);
 
   return (
-    <div className="grid grid-cols-4">
+    <div className="grid grid-cols-4 gap-2">
       <Button
         onClick={() => setStickers("axolotl")}
         variant="ghost"
         className={cn(
-          "h-auto",
-          stickers === "axolotl" && "border-2 border-[#72b86d]",
+          "h-auto border-2 p-2",
+          stickers === "axolotl" ? "border-[#72b86d]" : "border-transparent",
         )}
       >
         <Image src={gif1} alt="" className="w-12" unoptimized />
@@ -30,8 +30,8 @@ export const PhotostripStickers = () => {
         onClick={() => setStickers("cat")}
         variant="ghost"
         className={cn(
-          "h-auto",
-          stickers === "cat" && "border-2 border-[#72b86d]",
+          "h-auto border-2 p-2",
+          stickers === "cat" ? "border-[#72b86d]" : "border-transparent",
         )}
       >
         <Image src={gif4} alt="" className="w-12" unoptimized />
@@ -41,8 +41,8 @@ export const PhotostripStickers = () => {
         onClick={() => setStickers("panda")}
         variant="ghost"
         className={cn(
-          "h-auto",
-          stickers === "panda" && "border-2 border-[#72b86d]",
+          "h-auto border-2 p-2",
+          stickers === "panda" ? "border-[#72b86d]" : "border-transparent",
         )}
       >
         <Image src={gif8} alt="" className="w-12" unoptimized />
@@ -52,8 +52,8 @@ export const PhotostripStickers = () => {
         onClick={() => setStickers(null)}
         variant="ghost"
         className={cn(
-          "h-full w-full",
-          !stickers && "border-2 border-[#72b86d]",
+          "h-full w-full border-2 p-2",
+          !stickers ? "border-[#72b86d]" : "border-transparent",
         )}
       >
         <Trash />

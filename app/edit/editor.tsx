@@ -98,7 +98,7 @@ export const Editor = () => {
 
       // Create download link
       const link = document.createElement("a");
-      link.download = "vyvianbooth-photostrip.png";
+      link.download = "bubblybooth-photostrip.png";
       link.href = dataUrl;
       document.body.appendChild(link);
       link.click();
@@ -187,17 +187,17 @@ export const Editor = () => {
 
         <Button
           onClick={downloadImage}
-          className="bg-vintage-blue px-8 py-6 text-xl font-bold"
+          className="bg-vintage-blue w-full px-8 py-6 text-xl font-bold"
         >
-          <Download /> Download Photostrip
+          <Download /> Tải xuống
         </Button>
         <Button
           asChild
           variant="destructive"
-          className="px-8 py-6 text-xl font-bold"
+          className="w-full px-8 py-6 text-xl font-bold"
         >
-          <Link href="/camera">
-            <Camera /> Retake Photo
+          <Link href="/camera" className="w-full">
+            <Camera /> Chụp lại
           </Link>
         </Button>
       </div>

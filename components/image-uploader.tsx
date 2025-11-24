@@ -170,8 +170,8 @@ export default function ImageUploader() {
   };
 
   return (
-    <div className="mx-auto w-full p-4">
-      <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-3">
+    <div className="mx-auto w-full p-2">
+      <div className="mb-4 grid grid-cols-1 gap-3 md:grid-cols-3">
         {Array.from({ length: 3 }).map((_, index) => {
           const image = images[index];
           const isRequired = index === 0 && images.length === 0;
@@ -179,7 +179,7 @@ export default function ImageUploader() {
           return (
             <Card
               key={index}
-              className={`relative flex aspect-square w-[290px] items-center justify-center border-2 bg-[#F6F0F0] ${isDragging === index ? "border-primary border-dashed" : "border-border"} ${isRequired ? "border-primary/50" : ""} hover:border-primary/70 cursor-pointer overflow-hidden rounded-lg transition-all hover:shadow-sm`}
+              className={`relative flex aspect-square w-[220px] items-center justify-center border-2 bg-[#F6F0F0] ${isDragging === index ? "border-primary border-dashed" : "border-border"} ${isRequired ? "border-primary/50" : ""} hover:border-primary/70 cursor-pointer overflow-hidden rounded-lg transition-all hover:shadow-sm`}
               onDragOver={(e) => handleDragOver(e, index)}
               onDragLeave={handleDragLeave}
               onDrop={(e) => handleDrop(e, index)}
@@ -222,22 +222,22 @@ export default function ImageUploader() {
         })}
       </div>
 
-      <div className="mt-8 flex justify-center">
+      <div className="mt-6 flex justify-center">
         <Button
           onClick={handleSubmit}
           disabled={images.length === 0 || isSubmitting}
           className="flex items-center gap-2"
         >
           <Send className="h-4 w-4" />
-          {isSubmitting ? "Submitting..." : "Submit Images"}
+          {isSubmitting ? "Đang gửi..." : "Gửi ảnh"}
         </Button>
       </div>
 
-      <div className="mt-6 text-center">
+      <div className="mt-4 text-center">
         <p className="text-muted-foreground text-sm">
           {images.length === 0
-            ? "Upload at least 1 image to submit"
-            : `${images.length} of 3 images uploaded (ready to submit)`}
+            ? "Tải lên ít nhất 1 ảnh để gửi"
+            : `${images.length} trong 3 ảnh đã tải lên (sẵn sàng để gửi)`}
         </p>
       </div>
     </div>
